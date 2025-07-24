@@ -9,7 +9,6 @@
 // En este caso, este controlador se encarga de registrar un nuevo paciente.
 // -----------------------------------------------------------------------------
 
-
 // Abajo: se muestran errores en pantalla para facilitar la depuración durante el desarrollo.
 // No se recomienda dejar esto activo en un servidor en producción.
 ini_set('display_errors', 1);
