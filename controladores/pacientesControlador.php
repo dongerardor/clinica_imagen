@@ -1,32 +1,33 @@
 <?php
 
-// -----------------------------------------------------------------------------
-// CONTROLADOR DE PACIENTES
-// -----------------------------------------------------------------------------
-// Los controladores se encargan de recibir las acciones del usuario 
-// (como enviar un formulario), procesar los datos, y coordinar con los modelos 
-// (acceso a base de datos) y las vistas (interfaz).
-// En este caso, este controlador se encarga de registrar un nuevo paciente.
-// -----------------------------------------------------------------------------
+require_once __DIR__ . '/../core/helpers.php';
+require_once APP_ROOT . '/modelos/Paciente.php';
 
-// Abajo: se muestran errores en pantalla para facilitar la depuración durante el desarrollo.
-// No se recomienda dejar esto activo en un servidor en producción.
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+class PacientesControlador
+{
+    public function crear(): void
+    {
+        require view_path('pacientes/crear.php');
+    }
 
-// Cargar el modelo Paciente, que contiene la función para guardar en la base de datos.
-require_once('../modelos/Paciente.php');
+    public function guardar(): void
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+            http_response_code(405);
+            echo '<h1>Método no permitido</h1>';
+            return;
+        }
 
-// Verificar si la solicitud fue por POST (es decir, si se envió el formulario).
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        $nombre = $_POST['nombre'] ?? '';
+        $email = $_POST['email'] ?? '';
 
-    // Obtengo los datos enviados desde el formulario.
-    $nombre = $_POST['nombre'];
-    $email = $_POST['email'];
+        $exito = Paciente::crear($nombre, $email);
 
-    // si guardo al paciente bien... éxito!!
-    $exito = Paciente::crear($nombre, $email);
+        $destino = url('/pacientes/crear', [
+            'exito' => $exito ? 1 : 0,
+        ]);
 
-    // y luego, me voy al formulario nuevamente, diciendo si tuve éxito o no.
-    header('Location: ../vistas/pacientes/crear.php?exito=' . ($exito ? '1' : '0'));
+        header('Location: ' . $destino);
+        exit;
+    }
 }
